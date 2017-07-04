@@ -22,4 +22,7 @@ public class TraceIdHelper {
 		return traceIdHolder.get();
 	}
 
+	public static void clear() {
+        traceIdHolder.remove();
+    }
 }

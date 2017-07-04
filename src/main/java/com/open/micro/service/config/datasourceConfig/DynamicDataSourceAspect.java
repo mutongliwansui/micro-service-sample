@@ -26,9 +26,10 @@ public class DynamicDataSourceAspect {
 		if ( ! (signature instanceof MethodSignature) ) {
 			return;
 		}
-		
+
 		Method method = ( (MethodSignature)signature ).getMethod();	//获取到的可能是父类的签名
-		
+
+		//被调用函数的注解
 		Object realObject = point.getTarget();
 		Method realClassMethod = realObject.getClass().getMethod(method.getName(), method.getParameterTypes());
 		TargetDataSource targetDataSource = realClassMethod.getDeclaredAnnotation(TargetDataSource.class);
@@ -37,15 +38,25 @@ public class DynamicDataSourceAspect {
 			DynamicDataSourceContextHolder.setDataSourceType(targetDataSource.value());
 			return ;
 		}
-		
-		targetDataSource = method.getClass().getDeclaredAnnotation(TargetDataSource.class);	//类的注解
+
+		//被调用函数的实际类的注解
+		targetDataSource = method.getDeclaringClass().getDeclaredAnnotation(TargetDataSource.class);
 		if ( null != targetDataSource ) {
 			LOGGER.debug( "[{}] -> set dataSource:{}", Thread.currentThread().getName(), targetDataSource.value().toString() );
 			DynamicDataSourceContextHolder.setDataSourceType(targetDataSource.value());
 			return ;
 		}
-		
+
+		//父类函数的注解
 		targetDataSource = method.getDeclaredAnnotation(TargetDataSource.class);	//最后再获取这个注解，可能是父类的注解，可能是realClassMethod
+		if ( null != targetDataSource ) {
+			LOGGER.debug( "[{}] -> set dataSource:{}", Thread.currentThread().getName(), targetDataSource.value().toString() );
+			DynamicDataSourceContextHolder.setDataSourceType(targetDataSource.value());
+			return ;
+		}
+
+		//父类的注解
+		targetDataSource = method.getClass().getDeclaredAnnotation(TargetDataSource.class);	//类的注解
 		if ( null != targetDataSource ) {
 			LOGGER.debug( "[{}] -> set dataSource:{}", Thread.currentThread().getName(), targetDataSource.value().toString() );
 			DynamicDataSourceContextHolder.setDataSourceType(targetDataSource.value());

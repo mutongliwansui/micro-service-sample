@@ -34,7 +34,7 @@ public class SessionFactoryConfig {
 			
 			PageHelper pageHelper = new PageHelper();
 			Properties props = new Properties();
-			props.setProperty("reasonable", "true");
+			props.setProperty("reasonable", "false");
 			props.setProperty("supportMethodsArguments", "true");
 			props.setProperty("returnPageInfo", "check");
 			props.setProperty("params", "count=countSql");
